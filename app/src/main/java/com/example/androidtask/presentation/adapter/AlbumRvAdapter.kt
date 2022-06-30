@@ -16,7 +16,7 @@ class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.Vi
 
     var albumList = mutableListOf<AlbumsItem>()
     private lateinit var adapter:PhotoRvAdapter
-    var callGetPhotos: ((albumId: Int, position: Int) -> Unit)? = null
+    var callGetPhotos: ((albumId: Int, adapter: PhotoRvAdapter) -> Unit)? = null
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val title:TextView = itemView.findViewById(R.id.album_title)
@@ -36,14 +36,14 @@ class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.Vi
             holder.title.text = albumList[position].title
             adapter = PhotoRvAdapter()
             holder.photosRv.adapter = adapter
-            callGetPhotos?.invoke(albumList[position].id,position)
+            callGetPhotos?.invoke(albumList[position].id,adapter)
         }
 
 
     }
 
     override fun getItemCount(): Int {
-       return  albumList.size
+       return  3
     }
 
 

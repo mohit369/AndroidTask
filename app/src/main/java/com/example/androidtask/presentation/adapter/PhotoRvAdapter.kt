@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.androidtask.R
 import com.example.androidtask.domain.model.AlbumsItem
 import com.example.androidtask.domain.model.Photos
@@ -21,6 +23,7 @@ class PhotoRvAdapter@Inject constructor():RecyclerView.Adapter<PhotoRvAdapter.Vi
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
 
+        val photo:ImageView = itemView.findViewById(R.id.photos_iv)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,10 +33,12 @@ class PhotoRvAdapter@Inject constructor():RecyclerView.Adapter<PhotoRvAdapter.Vi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+
+        if (photoList.isNotEmpty())
+        Glide.with(holder.itemView.context).load(photoList[position].thumbnailUrl).centerCrop().into(holder.photo)
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+      return 3
     }
 }

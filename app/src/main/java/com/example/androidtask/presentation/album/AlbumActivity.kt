@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidtask.R
 import com.example.androidtask.presentation.adapter.AlbumRvAdapter
+import com.example.androidtask.presentation.adapter.PhotoRvAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class AlbumActivity : AppCompatActivity() {
 
     @Inject lateinit var albumRvAdapter:AlbumRvAdapter
+    lateinit var photoRvAdapter:PhotoRvAdapter
     private lateinit var albumRecyclerView: RecyclerView
     private val albumViewModel: AlbumViewModel by viewModels<AlbumViewModel>()
 
@@ -25,9 +27,13 @@ class AlbumActivity : AppCompatActivity() {
         albumViewModel.albumList.observe(this, Observer {
             albumRvAdapter.setAlbums(it)
         })
-        albumRvAdapter.callGetPhotos = { albumId, position ->
-
+        albumRvAdapter.callGetPhotos = {albumId, adapter ->
+            albumViewModel.getPhotosById(albumId)
+            photoRvAdapter = adapter
         }
+        albumViewModel.photosList.observe(this, Observer {
+            photoRvAdapter.setPhotos(it)
+        })
 
 
 
