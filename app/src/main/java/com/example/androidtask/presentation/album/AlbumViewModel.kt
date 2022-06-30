@@ -6,16 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidtask.common.Resource
 import com.example.androidtask.domain.model.AlbumsItem
+import com.example.androidtask.domain.model.Photos
 import com.example.androidtask.domain.use_case.GetAlbumUseCase
+import com.example.androidtask.domain.use_case.GetPhotosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUseCase):ViewModel() {
+class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUseCase,
+    private val getPhotosUseCase: GetPhotosUseCase):ViewModel() {
 
     var albumList: MutableLiveData<List<AlbumsItem>> = MutableLiveData<List<AlbumsItem>>()
+    var photosList: MutableLiveData<List<Photos>> = MutableLiveData<List<Photos>>()
     var isLoading = MutableLiveData<Boolean>()
 
     init {
@@ -36,6 +40,23 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
                     isLoading.postValue(false)
                 }
 
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun getPhotosById(albumId:Int) {
+        getPhotosUseCase(albumId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    isLoading.postValue(false)
+                    photosList.postValue(result.data ?: emptyList())
+                }
+                is Resource.Loading -> {
+                    isLoading.postValue(true)
+                }
+                is Resource.Error -> {
+                    isLoading.postValue(false)
+                }
             }
         }.launchIn(viewModelScope)
     }

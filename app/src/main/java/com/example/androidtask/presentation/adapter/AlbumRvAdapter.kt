@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidtask.R
 import com.example.androidtask.domain.model.AlbumsItem
+import com.example.androidtask.presentation.interfaces.CallGetPhotosInterface
 import javax.inject.Inject
 
 class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.ViewHolder>() {
 
     var albumList = mutableListOf<AlbumsItem>()
     private lateinit var adapter:PhotoRvAdapter
+    var callGetPhotos: ((albumId: Int, position: Int) -> Unit)? = null
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val title:TextView = itemView.findViewById(R.id.album_title)
@@ -30,9 +32,12 @@ class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.Vi
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.title.text = albumList[position].title
-        adapter = PhotoRvAdapter()
-        holder.photosRv.adapter = adapter
+        if (albumList.isNotEmpty()){
+            holder.title.text = albumList[position].title
+            adapter = PhotoRvAdapter()
+            holder.photosRv.adapter = adapter
+            callGetPhotos?.invoke(albumList[position].id,position)
+        }
 
 
     }

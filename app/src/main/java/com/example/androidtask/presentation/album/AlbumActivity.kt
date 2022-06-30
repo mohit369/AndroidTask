@@ -25,6 +25,9 @@ class AlbumActivity : AppCompatActivity() {
         albumViewModel.albumList.observe(this, Observer {
             albumRvAdapter.setAlbums(it)
         })
+        albumRvAdapter.callGetPhotos = { albumId, position ->
+
+        }
 
 
 
