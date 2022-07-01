@@ -42,7 +42,7 @@ class PhotoRvAdapter@Inject constructor():RecyclerView.Adapter<PhotoRvAdapter.Vi
 
         if (photoList.isNotEmpty()) {
             val theImage = GlideUrl(
-                photoList[position].thumbnailUrl, LazyHeaders.Builder()
+                photoList[position % photoList.size].thumbnailUrl, LazyHeaders.Builder()
                     .addHeader("User-Agent", "5")
                     .build()
             )
@@ -71,6 +71,6 @@ class PhotoRvAdapter@Inject constructor():RecyclerView.Adapter<PhotoRvAdapter.Vi
     }
 
     override fun getItemCount(): Int {
-      return photoList.size
+      return Integer.MAX_VALUE
     }
 }
