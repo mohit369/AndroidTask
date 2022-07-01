@@ -9,6 +9,7 @@ import com.example.androidtask.domain.model.AlbumsItem
 import com.example.androidtask.domain.model.Photos
 import com.example.androidtask.domain.use_case.GetAlbumUseCase
 import com.example.androidtask.domain.use_case.GetPhotosUseCase
+import com.example.androidtask.presentation.adapter.PhotoRvAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,7 +20,6 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
     private val getPhotosUseCase: GetPhotosUseCase):ViewModel() {
 
     var albumList: MutableLiveData<List<AlbumsItem>> = MutableLiveData<List<AlbumsItem>>()
-    var photosList: MutableLiveData<List<Photos>> = MutableLiveData<List<Photos>>()
     var isLoading = MutableLiveData<Boolean>()
 
     init {
@@ -44,12 +44,12 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
         }.launchIn(viewModelScope)
     }
 
-    fun getPhotosById(albumId:Int) {
+    fun getPhotosById(albumId: Int, adapter: PhotoRvAdapter) {
         getPhotosUseCase(albumId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     isLoading.postValue(false)
-                    photosList.postValue(result.data ?: emptyList())
+                    adapter.setPhotos(result.data ?: emptyList())
                 }
                 is Resource.Loading -> {
                     isLoading.postValue(true)

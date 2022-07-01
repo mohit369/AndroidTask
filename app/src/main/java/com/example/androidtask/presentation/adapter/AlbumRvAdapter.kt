@@ -43,7 +43,7 @@ class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.Vi
     }
 
     override fun getItemCount(): Int {
-       return  3
+       return  albumList.size
     }
 
 

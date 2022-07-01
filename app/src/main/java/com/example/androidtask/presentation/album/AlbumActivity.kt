@@ -28,12 +28,9 @@ class AlbumActivity : AppCompatActivity() {
             albumRvAdapter.setAlbums(it)
         })
         albumRvAdapter.callGetPhotos = {albumId, adapter ->
-            albumViewModel.getPhotosById(albumId)
+            albumViewModel.getPhotosById(albumId,adapter)
             photoRvAdapter = adapter
         }
-        albumViewModel.photosList.observe(this, Observer {
-            photoRvAdapter.setPhotos(it)
-        })
 
 
 
