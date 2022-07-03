@@ -5,19 +5,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidtask.common.Resource
+import com.example.androidtask.data.DatabaseDao
 import com.example.androidtask.domain.model.AlbumsItem
 import com.example.androidtask.domain.model.Photos
 import com.example.androidtask.domain.use_case.GetAlbumUseCase
 import com.example.androidtask.domain.use_case.GetPhotosUseCase
 import com.example.androidtask.presentation.adapter.PhotoRvAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUseCase,
-    private val getPhotosUseCase: GetPhotosUseCase):ViewModel() {
+    private val getPhotosUseCase: GetPhotosUseCase,private val dao: DatabaseDao):ViewModel() {
 
     var albumList: MutableLiveData<List<AlbumsItem>> = MutableLiveData<List<AlbumsItem>>()
     var isLoading = MutableLiveData<Boolean>()
@@ -27,11 +32,17 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
     }
 
     private fun getAlbums() {
+        CoroutineScope(Dispatchers.IO).launch {
+            albumList.postValue(dao.getAlbums())
+        }
+
+
+
         getAlbumUseCase().onEach { result ->
             when(result){
                 is Resource.Success ->{
                     isLoading.postValue(false)
-                    albumList.postValue(result.data ?: emptyList())
+                    result.data?.let { dao.insertAlbums(it) }
                 }
                 is Resource.Loading ->{
                     isLoading.postValue(true)
@@ -45,11 +56,18 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
     }
 
     fun getPhotosById(albumId: Int, adapter: PhotoRvAdapter) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val list = dao.getPhotos(albumId)
+            withContext(Dispatchers.Main) {
+                adapter.setPhotos(list)
+            }
+        }
+
         getPhotosUseCase(albumId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     isLoading.postValue(false)
-                    adapter.setPhotos(result.data ?: emptyList())
+                   result.data?.let { dao.insertPhotos(it) }
                 }
                 is Resource.Loading -> {
                     isLoading.postValue(true)

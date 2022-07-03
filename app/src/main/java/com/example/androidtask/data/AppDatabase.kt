@@ -14,8 +14,7 @@ import com.example.androidtask.domain.model.Photos
 @Database(entities = [AlbumsItem::class, Photos::class], version = 1, exportSchema = false)
 @TypeConverters
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun getAlbums(): AlbumsDao
-    abstract fun getPhotos(): PhotosDao
+    abstract fun getAlbums(): DatabaseDao
 
     companion object {
 
