@@ -22,4 +22,10 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhotos(list: List<Photos>)
 
+    @Query("DELETE FROM AlbumsItem")
+    suspend fun deleteAlbums()
+
+    @Query("DELETE FROM Photos")
+    suspend fun deletePhotos()
+
 }

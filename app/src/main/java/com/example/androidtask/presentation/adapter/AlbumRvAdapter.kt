@@ -33,17 +33,17 @@ class AlbumRvAdapter@Inject constructor():RecyclerView.Adapter<AlbumRvAdapter.Vi
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         if (albumList.isNotEmpty()){
-            holder.title.text = albumList[position].title
+            holder.title.text = albumList[position % albumList.size].title
             adapter = PhotoRvAdapter()
             holder.photosRv.adapter = adapter
-            callGetPhotos?.invoke(albumList[position].id,adapter)
+            callGetPhotos?.invoke(albumList[position % albumList.size].id,adapter)
         }
 
 
     }
 
     override fun getItemCount(): Int {
-       return  albumList.size
+       return  Int.MAX_VALUE
     }
 
 

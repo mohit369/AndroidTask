@@ -33,7 +33,10 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
 
     private fun getAlbums() {
         CoroutineScope(Dispatchers.IO).launch {
-            albumList.postValue(dao.getAlbums())
+            val list = dao.getAlbums()
+            withContext(Dispatchers.Main) {
+                list.let { albumList.postValue(it) }
+            }
         }
 
 
@@ -42,6 +45,10 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
             when(result){
                 is Resource.Success ->{
                     isLoading.postValue(false)
+                    if (dao.getAlbums().isEmpty()){
+                        albumList.postValue(result.data)
+                    }
+                    dao.deleteAlbums()
                     result.data?.let { dao.insertAlbums(it) }
                 }
                 is Resource.Loading ->{
@@ -59,7 +66,7 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
         CoroutineScope(Dispatchers.IO).launch {
             val list = dao.getPhotos(albumId)
             withContext(Dispatchers.Main) {
-                adapter.setPhotos(list)
+                list.let { adapter.setPhotos(it) }
             }
         }
 
@@ -67,6 +74,10 @@ class AlbumViewModel @Inject constructor(private val getAlbumUseCase: GetAlbumUs
             when (result) {
                 is Resource.Success -> {
                     isLoading.postValue(false)
+                    if (dao.getPhotos(albumId).isEmpty()){
+                        adapter.setPhotos(result.data!!)
+                    }
+                    dao.deletePhotos()
                    result.data?.let { dao.insertPhotos(it) }
                 }
                 is Resource.Loading -> {
